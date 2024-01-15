@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title> Hidden Convexity, Optimization, and Algorithms on Rotation Matrices</title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="reveal.css">
+		<link rel="stylesheet" href="solarized.css" id="theme">
+        <style>
+            p {font-size: 30px}
+            li {font-size: 30px}
+            .path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 2s linear forwards;
+            }
+
+            @keyframes dash {
+            to {
+                stroke-dashoffset: 0;
+            }
+            }
+        </style>
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<div class="slides">
+
+				<section>
+					<h2>Hidden Convexity, Optimization, and Algorithms on Rotation Matrices </h2>
+					<p>Kevin Shu</p>
+				</section>
+
+                <section>
+                    <section data-background-color="black" data-auto-animate>
+                        <h4>A Simple Problem</h4>
+                        <p style="color: white" data-id="problemDesc">
+                            Imagine you're an astronaut who is floating in space, and you can see the earth below you.
+                        </p>
+                        <img src="earth.svg" width="500px" data-id="earth"></img>
+                    </section>
+                    <section data-background-color="black" data-auto-animate>
+                        <h4>A Simple Problem</h4>
+                        <p style="color: white" data-id="problemDesc">
+                            You can also see some landmarks. You want to determine how you are oriented in space based on a globe.
+                        </p>
+                        <img src="earth2.svg" width="500px" data-id="earth"></img>
+                    </section>
+                    <section data-auto-animate>
+                        <h4> Wahba's Problem</h4>
+                        <p>
+                            \[
+                                \min_{U \in \text{SO}(3)} \sum_{i=1}^n \|U v_i - u_i\|^2,
+                            \]
+                            where \(v_i\) are the reference points, and \(u_i\) are the estimates of the actual locations of the points.
+                        </p>
+                    </section>
+                            
+                    <section data-auto-animate>
+                        <h4> Wahba's Problem (Reformulated)</h4>
+                        <p>
+                            \[
+                                \min_{U \in \text{SO}(3)} \langle V, U \rangle,
+                            \]
+                            where \(V = \sum_{i} u_i v_i^{\intercal}.\)
+                            
+                            This can be solved using SVDs.
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <h4 data-id="constrainedwahba"> Constrained Wahba's Problem</h4>
+                        <p>
+                            Given \(A, B \in \R^{n \times n}\),
+                        </p>
+                        <p>
+                            \[
+                                \min_{U \in \text{SO}(n)} \langle A, U \rangle
+                            \]
+                            \[
+                                \text{s.t. } \langle B, U \rangle \ge 3-\delta.
+                            \]
+                        </p>
+                        <p class="fragment fade-in">
+                            A constraint might appear if the astronaut already has some initial estimate of their orientation.
+                            The constraint reduces symmetry and means that <b>a direct solution using SVDs is not possible</b>.
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <h4 data-id="constrainedwahba"> Constrained Wahba's Problem (Reformulated) </h4>
+                        <p>
+                            Given \(A, B \in \R^{n \times n}\),
+                        </p>
+                        <p>
+                            \[
+                            \begin{align}
+                                \min &\qquad x\\
+                                \text{s.t. }&\qquad y \ge 3 -\delta\\
+                                &\qquad(x,y) \in \{\langle A, U\rangle, \langle B, U\rangle : U \in \text{SO}(n)\}.
+                            \end{align}
+                            \]
+                        </p>
+                        <div style="background: grey; color: white; padding: 20px 20px 20px 20px" class="fragment fade-in">
+                            <h5 style="color: white;">Theorem <!--CITE--></h5>
+                            <p >
+                                For any \(A, B \in \mathbb{R}^{n\times n}\), \(\{\langle A, U\rangle, \langle B, U\rangle : U \in \text{SO}(n)\}\) is convex.
+                                <sup>1,2</sup>
+                            </p>
+                        </div>
+                        <p class="fragment fade-in">
+                            This leads to an \(\epsilon\) approximation algorithm for the constrained Wahba's problem in \(O(n^3 \log(\frac{1}{\epsilon}))\) time.
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <h4> Hidden Convexity and the Special Orthogonal Group</h4>
+                        <p>
+                            Many fundamental problems in data science, engineering and graphics, involve optimization over rotation matrices, and usually are inherently nonconvex.
+                        </p>
+                        <p class="fragment fade-in" >
+                            This example shows that we can sometimes reformulate complicated optimization problems over rotation matrices as convex problems, aiding tractability. This type of phenomenon is known as <b>hidden convexity.</b>
+                        </p>
+                        <p  class="fragment fade-in" style="background: grey; color: white; padding: 20px 20px 20px 20px">
+                            <b>Question: </b>Given a linear map \(T : \R^{n \times n} \rightarrow \R^k \), when is \(T(\text{SO}(n))\) convex?
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <h4> Hidden Convexity and the Special Orthogonal Group</h4>
+                        <p  style="background: grey; color: white; padding: 20px 20px 20px 20px">
+                            <b>Question: </b>Given a linear map \(T : \R^{n \times n} \rightarrow \R^k \), when is \(T(\text{SO}(n))\) convex?
+                        </p>
+                        <ul>
+                            <li class="fragment fade-in" >
+                                We've already seen that if \(k = 2\), then for any such \(T\), \(T(\text{SO}(n))\) is convex. <b>New</b>
+                            </li>
+                            <li class="fragment fade-in" >
+                                If \(T  : \R^{n \times n} \rightarrow \R^n \) projects a matrix onto its diagonal entries, then \(T(\text{SO}(n))\) is convex. <i>(Horn's theorem)</i>
+                            </li>
+                            <li class="fragment fade-in" >
+                                <p>If \(T  : \R^{n \times n} \rightarrow \R^{\binom{n}{2}} \) projects a matrix onto its entries strictly above the diagonal, then \(T(\text{SO}(n))\) is convex. <b>New</b></p>
+                            </li>
+                        </ul>
+                        <p class="fragment fade-in">
+                            We also give membership oracles and optimization algorithms for each of these projections.
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <h4> Hidden Convexity and the Special Orthogonal Group</h4>
+                        <p>
+                            If \(T  : \R^{n \times n} \rightarrow \R^{\binom{n}{2}} \) projects a matrix onto its entries strictly above the diagonal, then \(T(\text{SO}(n))\) is convex. <b>New</b>
+                        </p>
+                        <div style="background: grey; color: white; padding: 20px 20px 20px 20px" class="fragment fade-in">
+                            <h5 style="color: white;">Example <!--CITE--></h5>
+                            <p>
+                                \[
+                                \left\{\begin{pmatrix} * & x & y\\ * & * & z \\ * & * & * \end{pmatrix} : \text{There is a completion in } \text{SO}(3)\right\}
+                                \]
+                                is convex.
+                            </p>
+                        </div>
+                        <p class="fragment fade-in">
+                            Implies that the image of \(\text{SO}(n)\) under \(n-1\) rank 1 matrices is convex.
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <h4> Hidden Convexity and the Special Orthogonal Group</h4>
+                        Each of the previous results was <i>maximal</i> in a certain sense:
+                        <div style="display:flex">
+                            <ul style="flex:1">
+                                <li>
+                                    \(k = 2\).
+                                </li>
+                                <li>
+                                    Projection onto diagonal.
+                                </li>
+                                <li>
+                                    Projection onto upper triangular entries.
+                                </li>
+                            </ul>
+                            <ul style="flex:2">
+                                <li class="fragment fade-in" >
+                                    For any \(n\), there is a linear map \(T : \R^{n \times n} \rightarrow \R^3 \), so that \(T(\text{SO}(n))\) is not convex.
+                                </li>
+                                <li class="fragment fade-in" >
+                                    If \(T  : \R^{n \times n} \rightarrow \R^{n+1} \) extends the projection of \(T(\text{SO}(n))\) to its diagonal, then \(T(\text{SO}(n))\) is nonconvex.
+                                </li>
+                                <li class="fragment fade-in" >
+                                    If \(T  : \R^{n \times n} \rightarrow \R^{k} \) for \(k > \binom{n}{2}\), then \(T(\text{SO}(n))\) is nonconvex.
+                                </li>
+                            </ul>
+                        </div>
+                    </section>
+                </section>
+                <section>
+                    <h3>
+                        Why hidden convexity for 2 dimensions?
+                    </h3>
+                </section>
+                <section>
+                    <h4>
+                        Why hidden convexity for 2 dimensions?
+                    </h4>
+                    <section>
+                        <div style="display:flex">
+                            <div style="flex:1">
+                                <img src="projection.png" width="200px" height="200px"></img>
+                            </div>
+                            <div style="flex:1">
+                                <img src="proj2.png" width="200px" height="200px"></img>
+                            </div>
+                            <div style="flex:1">
+                                <img src="proj3.png" width="200px" height="200px"></img>
+                            </div>
+                        </div>
+                        <p class="fragment fade-in">
+                            Observe that the boundaries are often smooth, and in fact, each point on the boundary is mapped to by a unique matrix in \(\text{SO}(n)\).
+                        </p>
+                    </section>
+                    <section data-state="drawCurve">
+                        <p>Suppose there is a continous parameterization of the boundary of the convex hull:</p>
+                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                            width="460.801px" height="345.601px" viewBox="0 0 460.801 345.601" enable-background="new 0 0 460.801 345.601"
+                            xml:space="preserve">
+                        <g>
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="red" stroke-miterlimit="10" d="
+                                M285.157,54.485c13.444,0.94,27.375,3.687,41.173,7.341c21.825,5.78,41.22,15.872,55.944,33.251
+                                c9.753,11.513,16.344,24.894,16.517,40.439c0.115,10.42-4.089,19.678-10.294,27.78c-8.207,10.715-19.127,18.571-30.392,25.646
+                                c-54.691,34.35-111.828,64.059-171.384,89.063c-17.797,7.472-36.514,11.513-55.664,13.503c-15.246,1.586-30.515,2.954-45.787,4.275
+                                c-1.954,0.169-4.055-0.298-5.961-0.882c-3.442-1.054-4.764-3.366-4.232-6.875c2.258-14.903,6.663-29.111,13.369-42.649
+                                c17.584-35.495,36.992-69.915,60.026-102.197c15.872-22.244,33.688-42.782,54.901-60.127c11.223-9.176,24.115-15.912,37.607-20.768
+                                c9.901-3.564,20.703-4.693,31.153-6.642C276.117,54.901,280.236,54.897,285.157,54.485z"/>
+                            <path id="curveDrawing" fill-rule="evenodd" clip-rule="evenodd" fill="none" stroke="#000000" stroke-width="5" stroke-miterlimit="10" d="
+                                M285.157,54.485c13.444,0.94,27.375,3.687,41.173,7.341c21.825,5.78,41.22,15.872,55.944,33.251
+                                c9.753,11.513,16.344,24.894,16.517,40.439c0.115,10.42-4.089,19.678-10.294,27.78c-8.207,10.715-19.127,18.571-30.392,25.646
+                                c-54.691,34.35-111.828,64.059-171.384,89.063c-17.797,7.472-36.514,11.513-55.664,13.503c-15.246,1.586-30.515,2.954-45.787,4.275
+                                c-1.954,0.169-4.055-0.298-5.961-0.882c-3.442-1.054-4.764-3.366-4.232-6.875c2.258-14.903,6.663-29.111,13.369-42.649
+                                c17.584-35.495,36.992-69.915,60.026-102.197c15.872-22.244,33.688-42.782,54.901-60.127c11.223-9.176,24.115-15.912,37.607-20.768
+                                c9.901-3.564,20.703-4.693,31.153-6.642C276.117,54.901,280.236,54.897,285.157,54.485z"/>
+                        </g>
+                        </svg>
+                    </section>
+                    <section>
+                        <p>If the whole convex hull were not in the image, then there would be a `hole' in the image.</p>
+                            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                width="460.801px" height="345.601px" viewBox="0 0 460.801 345.601" enable-background="new 0 0 460.801 345.601"
+                                xml:space="preserve">
+                            <g>
+                                <path fill-rule="evenodd" clip-rule="evenodd" fill="none" stroke="#000000" stroke-width="5" stroke-miterlimit="10" d="
+                                    M285.157,54.485c13.444,0.94,27.375,3.687,41.173,7.341c21.825,5.78,41.22,15.872,55.944,33.251
+                                    c9.753,11.513,16.344,24.894,16.517,40.439c0.115,10.42-4.089,19.678-10.294,27.78c-8.207,10.715-19.127,18.571-30.392,25.646
+                                    c-54.691,34.35-111.828,64.059-171.384,89.063c-17.797,7.472-36.514,11.513-55.664,13.503c-15.246,1.586-30.515,2.954-45.787,4.275
+                                    c-1.954,0.169-4.055-0.298-5.961-0.882c-3.442-1.054-4.764-3.366-4.232-6.875c2.258-14.903,6.663-29.111,13.369-42.649
+                                    c17.584-35.495,36.992-69.915,60.026-102.197c15.872-22.244,33.688-42.782,54.901-60.127c11.223-9.176,24.115-15.912,37.607-20.768
+                                    c9.901-3.564,20.703-4.693,31.153-6.642C276.117,54.901,280.236,54.897,285.157,54.485z"/>
+                            </g>
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="red" d="M382.274,95.078c-14.725-17.38-34.119-27.471-55.944-33.251
+                                c-13.798-3.655-27.729-6.401-41.173-7.341c-4.921,0.412-9.04,0.416-13.022,1.158c-10.45,1.949-21.252,3.077-31.153,6.642
+                                c-13.492,4.856-26.385,11.592-37.607,20.768c-21.213,17.345-39.029,37.883-54.901,60.127
+                                c-23.034,32.282-42.442,66.702-60.026,102.197c-6.706,13.538-11.111,27.746-13.369,42.649c-0.532,3.509,0.791,5.821,4.232,6.875
+                                c1.907,0.584,4.008,1.051,5.961,0.882c15.271-1.321,30.541-2.689,45.787-4.275c19.15-1.99,37.867-6.031,55.664-13.503
+                                c59.556-25.004,116.692-54.713,171.384-89.063c11.265-7.075,22.185-14.932,30.392-25.646c6.205-8.102,10.409-17.359,10.294-27.78
+                                C398.618,119.972,392.027,106.591,382.274,95.078z M241.5,191c-21.263,0-38.5-6.492-38.5-14.5c0-8.008,17.237-14.5,38.5-14.5
+                                c21.263,0,38.5,6.492,38.5,14.5C280,184.508,262.763,191,241.5,191z"/>
+                            </svg>
+                        <p>Holes in topological spaces are described by <i> homotopy groups</i> of the space.</p>
+                    </section>
+                    <section>
+                        <div style="background: grey; color: white; padding: 20px 20px 20px 20px" class="fragment fade-in">
+                            <h5 style="color: white;">Theorem <!--CITE--></h5>
+                            <p >
+                            A linear map \(T : \R^{n \times n} \rightarrow \R^k \) is <i> singularly noncrossing</i> if every nonzero matrix in the image of \(T^{\intercal}\) has nondegenerate singular values.
+                            </p>
+                            <p  class="fragment fade-in">
+                            If \(T\) is singularly noncrossing and \(\text{SO}(n)\) satisfies certain topological properties concerning its homotopy groups, then \(T(\text{SO}(n))\) is convex.
+                            </p>
+                        </div>
+                        <ol>
+                            <li class="fragment fade-in"> Use the Von Neumann-Wigner noncrossing theorem says that if \(k = 2\), then generic linear maps are noncrossing. </li>
+                            <li class="fragment fade-in"> The fundamental group of  \(\text{SO}(n)\) is \(\mathbb{Z} / 2 \mathbb{Z}\) when \(n > 2\). </li>
+                        </ol>
+                        <p class="fragment fade-in">These two facts imply that the previous theorem applies, and we get convexity when \(k = 2\).</p>
+
+                    </section>
+                </section>
+                <section>
+                    <h4>References</h4>
+                    <ol>
+                        <li> Ramachandran, Akshay, Kevin Shu, and Alex L. Wang. "Hidden convexity, optimization, and algorithms on rotation matrices." arXiv preprint arXiv:2304.08596 (2023). </li>
+                        <li> Li, Chi-Kwong, and Tin-Yau Tam. "Numerical ranges arising from simple Lie algebras." Canadian Journal of Mathematics 52.1 (2000): 141-171. </li>
+                    </ol>
+                </section>
+			</div>
+
+		</div>
+
+		<script src="reveal.js"></script>
+		<script src="math.js"></script>
+		<script>
+			Reveal.initialize({
+				history: true,
+				transition: 'linear',
+
+				mathjax2: {
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+
+				// There are three typesetters available
+				// RevealMath.MathJax2 (default)
+				// RevealMath.MathJax3
+				// RevealMath.KaTeX
+				//
+				// More info at https://revealjs.com/math/
+				plugins: [ RevealMath.MathJax2 ]
+			});
+            Reveal.addEventListener( 'drawCurve', function() {
+                element = document.getElementById("curveDrawing");
+                element.classList.add("path");
+            } );
+		</script>
+
+	</body>
+</html>
