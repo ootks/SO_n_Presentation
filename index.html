@@ -70,10 +70,14 @@
                     <section data-auto-animate>
                         <h4> Wahba's Problem</h4>
                         <p>
+                            Given $\{u_i\}_{i=1}^n, \{v_i\}_{i=1}^n \in \R^3$, find
                             \[
                                 \min_{U \in \text{SO}(3)} \sum_{i=1}^n \|U v_i - u_i\|^2,
                             \]
-                            where \(v_i\) are the reference points, and \(u_i\) are the estimates of the actual locations of the points.
+                            where $\text{SO}(3)$ is the set of $3 \times 3$ rotation matrices.
+                        </p>
+                        <p class="fragment fade-in">
+                        We think of the $u_i$ as being the reference points and the $v_i$ as being the landmarks.
                         </p>
                     </section>
                             
@@ -91,14 +95,14 @@
                     <section data-auto-animate>
                         <h4 data-id="constrainedwahba"> Constrained Wahba's Problem</h4>
                         <p>
-                            Given \(A, B \in \R^{n \times n}\),
+                            Given \(A, B \in \R^{n \times n}\), find
                         </p>
                         <p>
                             \[
                                 \min_{U \in \text{SO}(n)} \langle A, U \rangle
                             \]
                             \[
-                                \text{s.t. } \langle B, U \rangle \ge 3-\delta.
+                                \text{s.t. } \langle B, U \rangle \ge c
                             \]
                         </p>
                         <p class="fragment fade-in">
@@ -109,13 +113,13 @@
                     <section data-auto-animate>
                         <h4 data-id="constrainedwahba"> Constrained Wahba's Problem (Reformulated) </h4>
                         <p>
-                            Given \(A, B \in \R^{n \times n}\),
+                            Given \(A, B \in \R^{n \times n}\), find
                         </p>
                         <p>
                             \[
                             \begin{align}
                                 \min &\qquad x\\
-                                \text{s.t. }&\qquad y \ge 3 -\delta\\
+                                \text{s.t. }&\qquad y \ge c\\
                                 &\qquad(x,y) \in \{\langle A, U\rangle, \langle B, U\rangle : U \in \text{SO}(n)\}.
                             \end{align}
                             \]
@@ -236,7 +240,7 @@
                         </p>
                     </section>
                     <section data-state="drawCurve">
-                        <p>Suppose there is a continous parameterization of the boundary of the convex hull:</p>
+                        <p>One can show that there is a continuous parameterization of the boundary of this set.:</p>
                         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                             width="460.801px" height="345.601px" viewBox="0 0 460.801 345.601" enable-background="new 0 0 460.801 345.601"
                             xml:space="preserve">
@@ -284,6 +288,29 @@
                         <p>Holes in topological spaces are described by <i> homotopy groups</i> of the space.</p>
                     </section>
                     <section>
+                    <p>Homotopy theory tells us that there cannot be a hole in the image of $\text{SO}(n)$ of this dimension, which lets us conclude that the whole convex hull is in the image!</p>
+                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                            width="460.801px" height="345.601px" viewBox="0 0 460.801 345.601" enable-background="new 0 0 460.801 345.601"
+                            xml:space="preserve">
+                        <g>
+                            <path fill-rule="evenodd" clip-rule="evenodd" fill="red" stroke-miterlimit="10" d="
+                                M285.157,54.485c13.444,0.94,27.375,3.687,41.173,7.341c21.825,5.78,41.22,15.872,55.944,33.251
+                                c9.753,11.513,16.344,24.894,16.517,40.439c0.115,10.42-4.089,19.678-10.294,27.78c-8.207,10.715-19.127,18.571-30.392,25.646
+                                c-54.691,34.35-111.828,64.059-171.384,89.063c-17.797,7.472-36.514,11.513-55.664,13.503c-15.246,1.586-30.515,2.954-45.787,4.275
+                                c-1.954,0.169-4.055-0.298-5.961-0.882c-3.442-1.054-4.764-3.366-4.232-6.875c2.258-14.903,6.663-29.111,13.369-42.649
+                                c17.584-35.495,36.992-69.915,60.026-102.197c15.872-22.244,33.688-42.782,54.901-60.127c11.223-9.176,24.115-15.912,37.607-20.768
+                                c9.901-3.564,20.703-4.693,31.153-6.642C276.117,54.901,280.236,54.897,285.157,54.485z"/>
+                            <path id="curveDrawing" fill-rule="evenodd" clip-rule="evenodd" fill="none" stroke="#000000" stroke-width="5" stroke-miterlimit="10" d="
+                                M285.157,54.485c13.444,0.94,27.375,3.687,41.173,7.341c21.825,5.78,41.22,15.872,55.944,33.251
+                                c9.753,11.513,16.344,24.894,16.517,40.439c0.115,10.42-4.089,19.678-10.294,27.78c-8.207,10.715-19.127,18.571-30.392,25.646
+                                c-54.691,34.35-111.828,64.059-171.384,89.063c-17.797,7.472-36.514,11.513-55.664,13.503c-15.246,1.586-30.515,2.954-45.787,4.275
+                                c-1.954,0.169-4.055-0.298-5.961-0.882c-3.442-1.054-4.764-3.366-4.232-6.875c2.258-14.903,6.663-29.111,13.369-42.649
+                                c17.584-35.495,36.992-69.915,60.026-102.197c15.872-22.244,33.688-42.782,54.901-60.127c11.223-9.176,24.115-15.912,37.607-20.768
+                                c9.901-3.564,20.703-4.693,31.153-6.642C276.117,54.901,280.236,54.897,285.157,54.485z"/>
+                        </g>
+                        </svg>
+                    </section>
+                    <section>
                         <div style="background: grey; color: white; padding: 20px 20px 20px 20px" class="fragment fade-in">
                             <h5 style="color: white;">Theorem <!--CITE--></h5>
                             <p >
@@ -293,6 +320,7 @@
                             If \(T\) is singularly noncrossing and \(\text{SO}(n)\) satisfies certain topological properties concerning its homotopy groups, then \(T(\text{SO}(n))\) is convex.
                             </p>
                         </div>
+                        <p class="fragment fade-in">The case $k=2$ follows from the following two facts:</p>
                         <ol>
                             <li class="fragment fade-in"> Use the Von Neumann-Wigner noncrossing theorem says that if \(k = 2\), then generic linear maps are noncrossing. </li>
                             <li class="fragment fade-in"> The fundamental group of  \(\text{SO}(n)\) is \(\mathbb{Z} / 2 \mathbb{Z}\) when \(n > 2\). </li>
